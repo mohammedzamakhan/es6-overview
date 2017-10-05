@@ -12,11 +12,14 @@
       return a.localeCompare(b);
     };
 
-    fetch('./clients.json')
-      .then(function(res) {
-        return res.json();
-      })
-      .then(function(data) {
+    var request = new XMLHttpRequest();
+    request.open('GET', './clients.json', true);
+    
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        // Success!
+        var resp = request.responseText;
+        var data = JSON.parse(resp);
         render($content);
         events(data);
         var $clients = document.querySelector(CLIENTS_CONTAINER);
@@ -24,7 +27,10 @@
             filter: filter,
             sort: sort
         });
-      });
+      }
+    };
+    
+    request.send();
 
     var render = function(node, data) {
       node.innerHTML =
